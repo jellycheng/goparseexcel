@@ -1,7 +1,41 @@
 
+title = "解析excel配置"
+version = "1.0.1"
+
+[default]
+#数据处理方式，默认1-只获取field_mapping配置的表头，2-获取field_mapping+excel列作为参数，3-不使用field_mapping配置即使用excel列作为参数
+data_process_mode = 1
+# excel文件处理方式,1：一行一次请求，2：全部解析完后请求
+excel_handle_way = 1
+# 忽略行,多个用逗号分割
+rows_ignore="2"
+# 忽略列,多个用逗号分割
+cols_ignore="A,D"
+# 第几行用做表头
+header_row=1
+# excel文件,路径+文件名
+excel_file="./cjs.xlsx"
+# 解析指定的excel sheet name,可选，默认激活的sheetname
+excel_sheetname=""
+
+[api_config]
+# 接口配置
+api_url = "http://www.domain.com/upload/data?type=import_account&{{sign_key}}={{sign_val}}"
+sign_key="sign"  #url签名参数名
+sign_secret=""  #签名密钥xxx
+method="post" #请求方式，默认post
 
 [field_mapping]
-"公司名称" = "company_name"
-"部门名称" = "dept_name"
-
-
+# "excel表头名" = "接口参数名"
+"公司名称"="company_name"
+"部门名称" = "deptName"
+"姓名" = "realname"
+"联系电话" = "phone"
+"邮箱" = "email"
+"账号名" = "account_name"
+"密码"  = "pwd"
+"备注" = "remark"
+phone = "mobile"
+"A" = "a1"
+"B" = "b1"
+"G" = "G"
