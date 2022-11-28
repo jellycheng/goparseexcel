@@ -66,6 +66,7 @@ func ParseExcelContent(excelFile, sheetName string, headerRow int, rowsIgnore st
 			isIgnoreRow := false               // 是否忽略行
 			for colkey, colCell := range row { //列
 				colName := GetExcelNo(colkey)
+				colCell = strings.TrimSpace(colCell)
 				if rowKey == (headerRow - 1) { // 表头
 					isIgnoreRow = true
 					if gosupport.StrInSlice(colName, colsIgnoreSlice) { //忽略列
