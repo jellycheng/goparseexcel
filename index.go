@@ -115,7 +115,7 @@ func ParseToml(tomlFile string) (map[string]interface{}, error) {
 	}
 }
 
-func DataProcessMode(tomlFile string) error {
+func DataProcessMode(tomlFile string, callbackFunc func(gosupport.H, ApiBodyDto) error) error {
 	if cfg, err := ParseToml(tomlFile); err == nil {
 		tmp := gosupport.H(cfg)
 		if defaultCfg, ok := tmp["default"].(map[string]interface{}); ok {
@@ -123,14 +123,17 @@ func DataProcessMode(tomlFile string) error {
 				switch gosupport.StrTo(gosupport.ToStr(dataProcessMode)).MustInt() {
 				case 1:
 					if err, ret := DataProcessMode1(tmp); err == nil {
-						fmt.Println(gosupport.ToJson(ret))
-						// 发起请求
-
-						return nil
+						//fmt.Println(gosupport.ToJson(ret))
+						return callbackFunc(tmp, ret)
 					} else {
 						return err
 					}
-
+				case 3:
+					if err, ret := DataProcessMode3(tmp); err == nil {
+						return callbackFunc(tmp, ret)
+					} else {
+						return err
+					}
 				default:
 					return errors.New(fmt.Sprintf("不支持default.data_process_mode=%d", gosupport.StrTo(gosupport.ToStr(dataProcessMode)).MustInt()))
 				}
@@ -200,6 +203,51 @@ func DataProcessMode1(tomlCfg gosupport.H) (error, ApiBodyDto) {
 						return errors.New("field_mapping未配置"), ret
 					}
 
+				} else {
+					return err, ret
+				}
+			} else {
+				return errors.New("default.excel_sheetname未配置"), ret
+			}
+		} else {
+			return errors.New("default.excel_file未配置"), ret
+		}
+	}
+
+	return nil, ret
+}
+
+// DataProcessMode3 使用excel列作为参数
+func DataProcessMode3(tomlCfg gosupport.H) (error, ApiBodyDto) {
+	var ret = ApiBodyDto{
+		Header: map[string]string{},
+		Data:   make([]map[string]string, 0),
+	}
+	// 解析excel内容
+	if defaultCfg, ok := tomlCfg["default"].(map[string]interface{}); ok {
+		var headerRow int = 1 // 第几行用做表头
+		if tmpVal, isOk := defaultCfg["header_row"]; isOk {
+			headerRow = gosupport.StrTo(gosupport.ToStr(tmpVal)).MustInt()
+		}
+		var rowsIgnore string = "" // 忽略行,多个用逗号分割
+		if tmpVal, isOk := defaultCfg["rows_ignore"]; isOk {
+			rowsIgnore = gosupport.ToStr(tmpVal)
+		}
+		var colsIgnore string = "" // 忽略列,多个用逗号分割
+		if tmpVal, isOk := defaultCfg["cols_ignore"]; isOk {
+			colsIgnore = gosupport.ToStr(tmpVal)
+		}
+		if excelFile, ok1 := defaultCfg["excel_file"]; ok1 {
+			if sheetName, ok2 := defaultCfg["excel_sheetname"]; ok2 {
+				if err, excelDto := ParseExcelContent(excelFile.(string), sheetName.(string), headerRow, rowsIgnore, colsIgnore); err == nil {
+					//fmt.Println(gosupport.ToJson(excelDto))
+					// 组装数据
+					for _, v := range excelDto.Cols {
+						ret.Header[v] = excelDto.Header[v]
+					}
+					ret.Data = excelDto.RowsData
+
+					return nil, ret
 				} else {
 					return err, ret
 				}

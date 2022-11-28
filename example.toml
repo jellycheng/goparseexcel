@@ -4,7 +4,7 @@ version = "1.0.1"
 
 [default]
 #数据处理方式，默认1-只获取field_mapping配置的表头，2-获取field_mapping+excel列作为参数，3-不使用field_mapping配置即使用excel列作为参数
-data_process_mode = 1
+data_process_mode = 3
 # excel文件处理方式,1：一行一次请求，2：全部解析完后请求
 excel_handle_way = 1
 # 忽略行,多个用逗号分割
@@ -20,10 +20,8 @@ excel_sheetname=""
 
 [api_config]
 # 接口配置
-api_url = "http://www.domain.com/upload/data?type=import_account&{{sign_key}}={{sign_val}}"
-sign_key="sign"  #url签名参数名
+api_url = "http://devapi.nfangbian.com/test.php"
 sign_secret=""  #签名密钥xxx
-method="post" #请求方式，默认post
 
 [field_mapping]
 # "excel表头名" = "接口参数名"
