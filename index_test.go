@@ -77,3 +77,56 @@ func TestDataProcessMode(t *testing.T) {
 	}
 
 }
+
+// go test -run=TestPingWhereIdin
+func TestPingWhereIdin(t *testing.T) {
+	if err := DataProcessMode("example.toml", func(tomlCfg gosupport.H, dto ApiBodyDto) error {
+		tmpSlice := []string{}
+		fieldName01 := "deptName" // 要取的列，对应的字段值
+		for _, v := range dto.Data {
+			if tmp, ok := v[fieldName01]; ok && tmp != "" {
+				tmpSlice = append(tmpSlice, tmp)
+			}
+		}
+		// 去重
+		tmpSlice = gosupport.RemoveRepeatByString(tmpSlice)
+		// 拼接，19591,19595,19599
+		s, _ := gosupport.SliceJointoString(tmpSlice, ",", false)
+		fmt.Println(s)
+
+		return nil
+	}); err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("ok")
+	}
+
+}
+
+// go test -run=TestPingWhereStrin
+func TestPingWhereStrin(t *testing.T) {
+	if err := DataProcessMode("example.toml", func(tomlCfg gosupport.H, dto ApiBodyDto) error {
+		tmpSlice := []string{}
+		fieldName01 := "deptName" // 要取的列，对应的字段值
+		for _, v := range dto.Data {
+			if tmp, ok := v[fieldName01]; ok && tmp != "" {
+				tmpSlice = append(tmpSlice, tmp)
+			}
+		}
+		// 去重
+		tmpSlice = gosupport.RemoveRepeatByString(tmpSlice)
+		// 拼接，'19591','19595','19599'
+		s := ""
+		if tmpstr, _ := gosupport.SliceJointoString(tmpSlice, "','", false); tmpstr != "" {
+			s = "'" + tmpstr + "'"
+		}
+		fmt.Println(s)
+
+		return nil
+	}); err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("ok")
+	}
+
+}
