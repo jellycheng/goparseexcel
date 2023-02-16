@@ -20,5 +20,6 @@ cjs.json
 cjs.yml
 cjs.toml
 cjs.xlsx
+cjs.sql
 go.sum
 .DS_Store

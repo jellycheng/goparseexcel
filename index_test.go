@@ -130,3 +130,51 @@ func TestPingWhereStrin(t *testing.T) {
 	}
 
 }
+
+// go test -run=TestPinSql
+func TestPinSql(t *testing.T) {
+	// sql模板
+	sqlTpl := "INSERT INTO `t_shortlink_token` (`id`, `appid`, `token`, `mark`, `is_delete`, `create_time`, `update_time`, `delete_time`) " +
+		"VALUES (null, '{appid}', '{token}', '{mark}', 0, {create_time}, {update_time}, 0);"
+
+	// 提取code
+	codes := gosupport.ExtractCode(sqlTpl)
+	// 默认值
+	defaultData := map[string]string{
+		"create_time":gosupport.ToStr(gosupport.TimeNow()),
+		"update_time":gosupport.ToStr(gosupport.TimeNow()),
+		"mark":"xxx原因新增记录",
+	}
+
+	// example
+	if err := DataProcessMode("cjs.toml", func(tomlCfg gosupport.H, dto ApiBodyDto) error {
+		for _, vData := range dto.Data {
+			newSql := sqlTpl
+			if len(codes) == 0 {
+				break
+			}
+			for _, c := range codes {
+				if val, ok := vData[c]; ok {
+					newSql, _ = gosupport.Replace4code(newSql, c, val)
+				} else if val2,ok2 := defaultData[c]; ok2 {
+					newSql, _ = gosupport.Replace4code(newSql, c, val2)
+				}else {
+					newSql, _ = gosupport.Replace4code(newSql, c, "")
+				}
+			}
+			fmt.Println(newSql)
+			// 写文件
+			gosupport.FilePutContents("./cjs.sql", newSql + gosupport.GO_EOL)
+
+		}
+
+		return nil
+	}); err != nil {
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("ok")
+	}
+
+}
+
+
