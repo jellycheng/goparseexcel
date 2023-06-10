@@ -7,7 +7,7 @@ type ExcelDto struct {
 }
 
 type ApiBodyDto struct {
-	Header map[string]string   `json:"header"` // 表头 参数名1=》表头名,company_name=>公司名称
+	Header map[string]string   `json:"header"` // 表头 参数名1=》表头名,company_name=>公司名称,A=>公司名称
 	Data   []map[string]string `json:"data"`   // 多条数据，参数名1=》内容，参数名2=》内容，company_name=>xxx公司
 }
 

@@ -69,3 +69,38 @@ func main() {
 }
 
 ```
+
+## 分析excel
+```
+package main
+
+import (
+	"fmt"
+	"github.com/jellycheng/goparseexcel"
+	"strings"
+)
+
+func main() {
+	excelFile := "/Users/jelly/Desktop/合同订单-20230608-导出数据.xlsx"
+	sheetName := ""
+	count := 0 // 控制解析行数
+	if err, rows := goparseexcel.ParseExcel(excelFile, sheetName); err == nil {
+		for rowKey, row := range rows { // 循环行
+			fmt.Println("rowKey=", rowKey)
+			count++
+			if count > 4 {
+				break
+			}
+			for colkey, colCell := range row { // 循环列
+				colName := goparseexcel.GetExcelNo(colkey) // excel列号 A、B、C...
+				colCell = strings.TrimSpace(colCell)       // 内容并去掉前后空格
+				fmt.Println("列号=", colName, " | 列内容=", colCell)
+			}
+		}
+	} else {
+		fmt.Println(err.Error())
+	}
+
+}
+
+```

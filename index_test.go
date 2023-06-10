@@ -141,9 +141,9 @@ func TestPinSql(t *testing.T) {
 	codes := gosupport.ExtractCode(sqlTpl)
 	// 默认值
 	defaultData := map[string]string{
-		"create_time":gosupport.ToStr(gosupport.TimeNow()),
-		"update_time":gosupport.ToStr(gosupport.TimeNow()),
-		"mark":"xxx原因新增记录",
+		"create_time": gosupport.ToStr(gosupport.TimeNow()),
+		"update_time": gosupport.ToStr(gosupport.TimeNow()),
+		"mark":        "xxx原因新增记录",
 	}
 
 	// example
@@ -156,15 +156,15 @@ func TestPinSql(t *testing.T) {
 			for _, c := range codes {
 				if val, ok := vData[c]; ok {
 					newSql, _ = gosupport.Replace4code(newSql, c, val)
-				} else if val2,ok2 := defaultData[c]; ok2 {
+				} else if val2, ok2 := defaultData[c]; ok2 {
 					newSql, _ = gosupport.Replace4code(newSql, c, val2)
-				}else {
+				} else {
 					newSql, _ = gosupport.Replace4code(newSql, c, "")
 				}
 			}
 			fmt.Println(newSql)
 			// 写文件
-			gosupport.FilePutContents("./cjs.sql", newSql + gosupport.GO_EOL)
+			gosupport.FilePutContents("./cjs.sql", newSql+gosupport.GO_EOL)
 
 		}
 
@@ -176,5 +176,3 @@ func TestPinSql(t *testing.T) {
 	}
 
 }
-
-

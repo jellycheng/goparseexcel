@@ -63,11 +63,11 @@ func ParseExcelContent(excelFile, sheetName string, headerRow int, rowsIgnore st
 	if err, rows := ParseExcel(excelFile, sheetName); err == nil {
 		for rowKey, row := range rows { // 行
 			tmpCon := map[string]string{}
-			isIgnoreRow := false               // 是否忽略行
+			isIgnoreRow := false               // 是否忽略行，是否表头
 			for colkey, colCell := range row { //列
-				colName := GetExcelNo(colkey)
-				colCell = strings.TrimSpace(colCell)
-				if rowKey == (headerRow - 1) { // 表头
+				colName := GetExcelNo(colkey)        // excel列号 A、B、C...
+				colCell = strings.TrimSpace(colCell) // 内容并去掉前后空格
+				if rowKey == (headerRow - 1) {       // 表头
 					isIgnoreRow = true
 					if gosupport.StrInSlice(colName, colsIgnoreSlice) { //忽略列
 						continue
