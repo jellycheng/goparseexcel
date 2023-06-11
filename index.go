@@ -262,3 +262,37 @@ func DataProcessMode3(tomlCfg gosupport.H) (error, ApiBodyDto) {
 
 	return nil, ret
 }
+
+func GetExcelValue(excelFile string, sheetName string, columnNum int, rowNum int) (error, [][]string) {
+	var err error
+	var ret [][]string
+	if !gosupport.FileExists(excelFile) {
+		err = errors.New("excel 文件不存在：" + excelFile)
+		return err, ret
+	}
+	f, err := excelize.OpenFile(excelFile)
+	if err != nil {
+		return err, ret
+	}
+	defer func() {
+		_ = f.Close()
+	}()
+	if sheetName == "" {
+		sheetName = f.GetSheetName(f.GetActiveSheetIndex())
+	}
+	for r := 1; r <= rowNum; r++ {
+		tmpRows := []string{} // 行记录
+		for c := 1; c <= columnNum; c++ {
+			axis := fmt.Sprintf("%s%s", GetExcelNo(c-1), gosupport.ToStr(r))
+			// 获取工作表中指定单元格的值
+			if cell, err := f.GetCellValue(sheetName, axis); err == nil {
+				tmpRows = append(tmpRows, cell)
+			} else {
+				return errors.New(axis + "单元格数据错误：" + err.Error()), ret
+			}
+
+		}
+		ret = append(ret, tmpRows)
+	}
+	return err, ret
+}
